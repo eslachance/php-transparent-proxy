@@ -49,7 +49,7 @@ $domainName = "{$matches[0]}";
 if($domainName == $RequestDomain) {
 
     $method = $_SERVER['REQUEST_METHOD'];
-    $response = proxy_request($destinationURL, ($method == "GET" ? $_GET : $_POST), $method);
+    $response = proxy_request($destinationURL, ($method === 'GET' ? $_GET : $_POST), $method);
     $headerArray = explode("\r\n", $response[header]);
 
     foreach($headerArray as $headerLine) {
@@ -63,7 +63,7 @@ if($domainName == $RequestDomain) {
 
   }
 
-function proxy_request($url, $data, $method) {
+function proxy_request($url, $data = null, $method = 'GET') {
 // Based on post_request from http://www.jonasjohn.de/snippets/php/post-request.htm
     global $ip;
     // Convert the data array into URL Parameters like a=b&foo=bar etc.
@@ -86,7 +86,7 @@ function proxy_request($url, $data, $method) {
  
     if ($fp){
         // send the request headers:
-        if($method == "POST") {
+        if($method == 'POST') {
             fputs($fp, "POST $path HTTP/1.1\r\n");
         } else {
             fputs($fp, "GET $path?$data HTTP/1.1\r\n");
@@ -98,9 +98,9 @@ function proxy_request($url, $data, $method) {
         
            $requestHeaders = apache_request_headers();
         while ((list($header, $value) = each($requestHeaders))) {
-            if($header == "Content-Length") {
+            if($header === 'Content-Length') {
                 fputs($fp, "Content-Length: $datalength\r\n");
-            } else if($header !== "Connection" && $header !== "Host" && $header !== "Content-length") {
+            } else if($header !== 'Connection' && $header !== 'Host' && $header !== 'Content-Length') {
                 fputs($fp, "$header: $value\r\n");
             }
         }
