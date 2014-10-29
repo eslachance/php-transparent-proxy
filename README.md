@@ -4,6 +4,14 @@ Proxy (noun, /'prɒksi/): A process that accepts requests for some service and p
 
 I needed to do cross-domain AJAX calls from a jQuery front-end to a PHP backend which was on another domain, and couldn't find a complete, functional proxy script that could bridge both ends... so I created my own. Since both servers had PHP (but the backend needed extra stuff that wasn't on the frontend server), doing a PHP Proxy seemed like the way to go.
 
+### What this is *NOT*
+
+PHP Transparent Proxy is not a server proxy that redirects requests. In other words, it's not a server that you would add to your browser and that would "pretend" to be from somewhere else. It can't be used to bypass a firewall at work or at school, etc.
+
+### No Extended Email Support
+
+While I will attempt to guide someone or answer email requests sent to me, I am not in a position to offer extended support, debugging, or remote support to implement the use of this proxy or debug your code. In other words, this code is provided as-is!
+
 ### What this proxy supports:
 
 - GET and POST requests (POST was the whole reason for this, since jsonp doesn't support it!)
@@ -16,6 +24,13 @@ I needed to do cross-domain AJAX calls from a jQuery front-end to a PHP backend 
 - Dynamic destination (though that's relatively trivial to change), because I don't need it.
 - Load Balancing/Cycling, I may add this as a personal exercise in the future.
 - Authentication, beyond the referrer check, or session (this should be handled by the backend anyway)
+ 
+### Quick Steps
+
+- Download proxy.php. 
+- Modify proxy.php and change the $destinationURL to the URL where your backend server-side script is (meaning, where you want to pull the data from)
+- Place the proxy.php script somewhere on your website hosting, on the same server you want to use it from.
+- Change your front-end JavaScript to use the proxy.php instead of the backend URL. See POST Example section below for an example usage.
 
 ## Usage Examples
 
