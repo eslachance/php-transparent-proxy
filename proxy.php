@@ -50,12 +50,12 @@ if($domainName == $RequestDomain) {
 
     $method = $_SERVER['REQUEST_METHOD'];
     $response = proxy_request($destinationURL, ($method == "GET" ? $_GET : $_POST), $method);
-    $headerArray = explode("\r\n", $response[header]);
+    $headerArray = explode("\r\n", $response['header']);
 
     foreach($headerArray as $headerLine) {
      header($headerLine);
     }
-    echo $response[content];
+    echo $response['content'];
  
   } else {
 
