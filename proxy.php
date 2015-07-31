@@ -53,7 +53,7 @@ if($domainName == $RequestDomain) {
     $headerArray = explode("\r\n", $response['header']);
 
     foreach($headerArray as $headerLine) {
-     header($headerLine);
+     header($headerLine, FALSE);
     }
     echo $response['content'];
  
