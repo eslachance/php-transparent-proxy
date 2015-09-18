@@ -83,6 +83,8 @@ if($req_parts["host"] == $RequestDomain) {
     global $ip;
     // Convert the data array into URL Parameters like a=b&foo=bar etc.
     $data = http_build_query($data);
+	// Add GET params from destination URL here
+	$data = $data . parse_url($url)["query"];
     $datalength = strlen($data);
  
     // parse the given URL
