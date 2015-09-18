@@ -12,8 +12,7 @@
 $destinationURL = 'http://www.otherdomain.com/backend.php';
 
 // The only domain from which requests are authorized.
-// Must include port number (example.com:8181) if different than the default http port.
-$RequestDomain = 'example.com:8123';
+$RequestDomain = 'example.com';
 
 // That's it for configuration!
 
@@ -43,14 +42,10 @@ if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
     //echo "REMOTE_ADDR: ".$ip;
 }
 
-// Get the requesting domain name
-preg_match('@^(?:http://)?([^/]+)@i', $_SERVER['HTTP_REFERER'], $matches);
-$host = $matches[1];
-preg_match('/[^.]+\.[^.]+$/', $host, $matches);
-$domainName = "{$matches[0]}";
+$req_parts = parse_url($_SERVER['HTTP_REFERER']);
 
 // IF domain name matches the authorized domain, proceed with request.
-if($domainName == $RequestDomain) {
+if($req_parts["host"] == $RequestDomain) {
     $method = $_SERVER['REQUEST_METHOD'];
     $response = proxy_request($destinationURL, ($method == "GET" ? $_GET : $_POST), $method);
     $headerArray = explode("\r\n", $response['header']);
