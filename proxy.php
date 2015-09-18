@@ -47,6 +47,13 @@ $req_parts = parse_url($_SERVER['HTTP_REFERER']);
 // IF domain name matches the authorized domain, proceed with request.
 if($req_parts["host"] == $RequestDomain) {
     $method = $_SERVER['REQUEST_METHOD'];
+	if ($method == "GET") {
+		$data=$_GET;
+	} elseif ($method=="POST" && count($_POST)>0) {
+		$data=$_POST;
+	} else {
+		$data = $HTTP_RAW_POST_DATA;
+	}
     $response = proxy_request($destinationURL, ($method == "GET" ? $_GET : $_POST), $method);
     $headerArray = explode("\r\n", $response['header']);
 	$is_gzip = false;
@@ -80,11 +87,23 @@ if($req_parts["host"] == $RequestDomain) {
   
   function proxy_request($url, $data, $method) {
 // Based on post_request from http://www.jonasjohn.de/snippets/php/post-request.htm
+
+
+	$req_dump = print_r($data, TRUE);
+
     global $ip;
     // Convert the data array into URL Parameters like a=b&foo=bar etc.
-    $data = http_build_query($data);
-	// Add GET params from destination URL here
-	$data = $data . parse_url($url)["query"];
+	if ($method == "GET")  {
+		$data = http_build_query($data);
+		// Add GET params from destination URL
+		$data = $data . parse_url($url)["query"];
+	} elseif ($method=="POST" && count($_POST)>0) {
+		$data = http_build_query($data);
+		// Add GET params from destination URL
+		$data = $data . parse_url($url)["query"];
+	} else {
+		$data = $data;
+	}
     $datalength = strlen($data);
  
     // parse the given URL
@@ -98,8 +117,11 @@ if($req_parts["host"] == $RequestDomain) {
     $host = $url['host'];
     $path = $url['path'];
     
-    // open a socket connection on port 80 - timeout: 30 sec
-    $fp = fsockopen($host, 80, $errno, $errstr, 30);
+	if ($url['scheme'] == 'http') {
+   		 $fp = fsockopen($host, 80, $errno, $errstr, 30);
+    } else($url['scheme'] == 'https') {
+    	$fp = fsockopen($host, 443, $errno, $errstr, 30);
+	}
  
     if ($fp){
         // send the request headers:
