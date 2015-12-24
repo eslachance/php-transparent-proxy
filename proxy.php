@@ -54,7 +54,7 @@ if($req_parts["host"] == $RequestDomain) {
 	} else {
 		$data = $HTTP_RAW_POST_DATA;
 	}
-    $response = proxy_request($destinationURL, ($method == "GET" ? $_GET : $_POST), $method);
+    $response = proxy_request($destinationURL, $data, $method);
     $headerArray = explode("\r\n", $response['header']);
 	$is_gzip = false;
 	$is_chunked = false;
