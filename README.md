@@ -4,6 +4,10 @@ Proxy (noun, /'prɒksi/): A process that accepts requests for some service and p
 
 I needed to do cross-domain AJAX calls from a jQuery front-end to a PHP backend which was on another domain, and couldn't find a complete, functional proxy script that could bridge both ends... so I created my own. Since both servers had PHP (but the backend needed extra stuff that wasn't on the frontend server), doing a PHP Proxy seemed like the way to go.
 
+## No Longer Maintained
+
+Please note that I no longer maintain this repo, and have no plans to update it in the future.
+
 ### What this is *NOT*
 
 PHP Transparent Proxy is not a server proxy that redirects requests. In other words, it's not a server that you would add to your browser and that would "pretend" to be from somewhere else. It can't be used to bypass a firewall at work or at school, etc.
