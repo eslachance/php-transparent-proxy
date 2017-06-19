@@ -119,7 +119,7 @@ if($req_parts["host"] == $RequestDomain) {
     
 	if ($url['scheme'] == 'http') {
    		 $fp = fsockopen($host, 80, $errno, $errstr, 30);
-    } else($url['scheme'] == 'https') {
+    } elseif ($url['scheme'] == 'https') {
     	$fp = fsockopen($host, 443, $errno, $errstr, 30);
 	}
  
