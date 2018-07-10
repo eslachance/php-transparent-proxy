@@ -12,6 +12,7 @@
 $destinationURL = 'http://www.otherdomain.com/backend.php';
 
 // The only domain from which requests are authorized.
+// optional, empty string allows access from for any referer
 $RequestDomain = 'example.com';
 
 // That's it for configuration!
@@ -45,7 +46,7 @@ if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 $req_parts = parse_url($_SERVER['HTTP_REFERER']);
 
 // IF domain name matches the authorized domain, proceed with request.
-if($req_parts["host"] == $RequestDomain) {
+if(strlen($RequestDomain) ? $RequestDomain == $req_parts["host"] : TRUE) {
     $method = $_SERVER['REQUEST_METHOD'];
 	if ($method == "GET") {
 		$data=$_GET;
@@ -55,6 +56,11 @@ if($req_parts["host"] == $RequestDomain) {
 		$data = $HTTP_RAW_POST_DATA;
 	}
     $response = proxy_request($destinationURL, ($method == "GET" ? $_GET : $_POST), $method);
+
+    if($response['status'] != 'ok') {
+        http_response_code($response['code']);
+        echo 'error: '. $response['error'];
+    } else {
     $headerArray = explode("\r\n", $response['header']);
 	$is_gzip = false;
 	$is_chunked = false;
@@ -80,9 +86,10 @@ if($req_parts["host"] == $RequestDomain) {
 		$contents = gzdecode($contents);
 	}
 	echo $contents;
-  } else {
+    }
+} else {
     echo $domainName." is not an authorized domain.";
-  }
+}
 
   
   function proxy_request($url, $data, $method) {
@@ -114,14 +121,14 @@ if($req_parts["host"] == $RequestDomain) {
     }
  
     // extract host and path:
+    $ishttp = $url['scheme'] == 'http';
+    $ishttps = $url['scheme'] == 'https';
     $host = $url['host'];
     $path = $url['path'];
+    $port = $url['port'] > 0 ? $url['port'] : ($ishttps ? 443 : ($ishttp ? 80 : ''));
+
+    $fp = fsockopen($host, $port, $errno, $errstr, 30);
     
-	if ($url['scheme'] == 'http') {
-   		 $fp = fsockopen($host, 80, $errno, $errstr, 30);
-    } elseif ($url['scheme'] == 'https') {
-    	$fp = fsockopen($host, 443, $errno, $errstr, 30);
-	}
  
     if ($fp){
         // send the request headers:
@@ -149,12 +156,13 @@ if($req_parts["host"] == $RequestDomain) {
         $result = ''; 
         while(!feof($fp)) {
             // receive the results of the request
-            $result .= fgets($fp, 128);
+            $result .= fgets($fp, 1024);
         }
     }
     else { 
         return array(
             'status' => 'err', 
+            'code' => $errno,
             'error' => "$errstr ($errno)"
         );
     }
