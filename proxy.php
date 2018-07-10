@@ -45,7 +45,7 @@ if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 $req_parts = parse_url($_SERVER['HTTP_REFERER']);
 
 // IF domain name matches the authorized domain, proceed with request.
-if($req_parts["host"] == $RequestDomain) {
+if(strlen($RequestDomain) ? $RequestDomain == $req_parts["host"] : TRUE) {
     $method = $_SERVER['REQUEST_METHOD'];
 	if ($method == "GET") {
 		$data=$_GET;
