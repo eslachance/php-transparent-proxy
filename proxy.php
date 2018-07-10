@@ -121,14 +121,14 @@ if(strlen($RequestDomain) ? $RequestDomain == $req_parts["host"] : TRUE) {
     }
  
     // extract host and path:
+    $ishttp = $url['scheme'] == 'http';
+    $ishttps = $url['scheme'] == 'https';
     $host = $url['host'];
     $path = $url['path'];
+    $port = $url['port'] > 0 ? $url['port'] : ($ishttps ? 443 : ($ishttp ? 80 : ''));
+
+    $fp = fsockopen($host, $port, $errno, $errstr, 30);
     
-	if ($url['scheme'] == 'http') {
-   		 $fp = fsockopen($host, 80, $errno, $errstr, 30);
-    } elseif ($url['scheme'] == 'https') {
-    	$fp = fsockopen($host, 443, $errno, $errstr, 30);
-	}
  
     if ($fp){
         // send the request headers:
