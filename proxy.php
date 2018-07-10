@@ -12,6 +12,7 @@
 $destinationURL = 'http://www.otherdomain.com/backend.php';
 
 // The only domain from which requests are authorized.
+// optional, empty string allows access from for any referer
 $RequestDomain = 'example.com';
 
 // That's it for configuration!
