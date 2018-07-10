@@ -56,6 +56,11 @@ if(strlen($RequestDomain) ? $RequestDomain == $req_parts["host"] : TRUE) {
 		$data = $HTTP_RAW_POST_DATA;
 	}
     $response = proxy_request($destinationURL, ($method == "GET" ? $_GET : $_POST), $method);
+
+    if($response['status'] != 'ok') {
+        http_response_code($response['code']);
+        echo 'error: '. $response['error'];
+    } else {
     $headerArray = explode("\r\n", $response['header']);
 	$is_gzip = false;
 	$is_chunked = false;
@@ -81,9 +86,10 @@ if(strlen($RequestDomain) ? $RequestDomain == $req_parts["host"] : TRUE) {
 		$contents = gzdecode($contents);
 	}
 	echo $contents;
-  } else {
+    }
+} else {
     echo $domainName." is not an authorized domain.";
-  }
+}
 
   
   function proxy_request($url, $data, $method) {
@@ -150,12 +156,13 @@ if(strlen($RequestDomain) ? $RequestDomain == $req_parts["host"] : TRUE) {
         $result = ''; 
         while(!feof($fp)) {
             // receive the results of the request
-            $result .= fgets($fp, 128);
+            $result .= fgets($fp, 1024);
         }
     }
     else { 
         return array(
             'status' => 'err', 
+            'code' => $errno,
             'error' => "$errstr ($errno)"
         );
     }
